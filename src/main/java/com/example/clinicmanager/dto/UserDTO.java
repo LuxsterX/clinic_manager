@@ -1,11 +1,23 @@
 package com.example.clinicmanager.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Data Transfer Object for user details")
 public class UserDTO {
+
+    @Schema(description = "Username of the user", example = "john_doe")
     private String username;
+
+    @Schema(description = "Email address of the user", example = "john.doe@example.com")
     private String email;
+
+    @Schema(description = "Full name of the user", example = "John Doe")
     private String fullName;
+
+    @Schema(description = "Role of the user", example = "PATIENT")
     private String role;
 
+    // Getters and Setters
     public String getUsername() {
         return username;
     }
@@ -37,6 +49,4 @@ public class UserDTO {
     public void setRole(String role) {
         this.role = role;
     }
-
-    // Getters and Setters
 }

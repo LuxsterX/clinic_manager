@@ -3,8 +3,12 @@ package com.example.clinicmanager.model;
 import jakarta.persistence.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Entity class representing a rating given by a patient to a doctor.
+ */
 @Entity
 @Table(name = "ratings")
+@Schema(description = "Entity representing a rating in the clinic system")
 public class RatingEntity {
 
     @Id
@@ -27,10 +31,12 @@ public class RatingEntity {
 
     @Schema(description = "Optional comments provided by the patient", example = "Excellent service!")
     private String comments;
+
     // Default constructor for JPA
     public RatingEntity() {
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -71,6 +77,3 @@ public class RatingEntity {
         this.comments = comments;
     }
 }
-
-
-

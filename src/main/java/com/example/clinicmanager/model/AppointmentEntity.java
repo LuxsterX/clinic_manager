@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Entity class representing an appointment.
+ */
 @Entity
+@Schema(description = "Entity representing an appointment in the clinic")
 public class AppointmentEntity {
 
     @Id
@@ -31,6 +35,7 @@ public class AppointmentEntity {
     @Schema(description = "Status of the appointment", example = "SCHEDULED")
     private String status;
 
+    // Getters and setters
     public Long getId() {
         return id;
     }

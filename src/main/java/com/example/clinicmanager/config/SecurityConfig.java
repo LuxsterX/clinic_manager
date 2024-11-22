@@ -16,10 +16,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Wyłącz CSRF, jeśli używasz tokenów JWT (możesz to dostosować w zależności od wymagań)
+                .csrf(csrf -> csrf.disable()) // Disable CSRF if using JWT tokens
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**").permitAll() // Endpoints dostępne publicznie
-                        .anyRequest().authenticated() // Wymaga uwierzytelnienia dla innych endpointów
+                        .requestMatchers("/auth/**", "/public/**").permitAll() // Publicly accessible endpoints
+                        .anyRequest().authenticated() // Require authentication for all other endpoints
                 );
         return http.build();
     }
@@ -34,17 +34,13 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Zezwalaj na pochodzenie tylko z frontendu
-        config.addAllowedOriginPattern("http://localhost:3010"); // Zmień na frontendowy adres
+        config.addAllowedOriginPattern("http://localhost:3010"); // Change to frontend address
 
-        config.setAllowCredentials(true); // Zezwól na wysyłanie ciasteczek i nagłówków autoryzacji
-        config.addAllowedHeader("*"); // Zezwalaj na wszystkie nagłówki
-        config.addAllowedMethod("*"); // Zezwalaj na wszystkie metody HTTP (GET, POST, PUT, DELETE, itp.)
+        config.setAllowCredentials(true); // Allow credentials
+        config.addAllowedHeader("*"); // Allow all headers
+        config.addAllowedMethod("*"); // Allow all HTTP methods
 
-        // Zarejestruj powyższą konfigurację dla wszystkich endpointów
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-
-
 }

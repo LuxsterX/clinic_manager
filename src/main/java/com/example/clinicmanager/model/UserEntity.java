@@ -7,11 +7,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
 
+/**
+ * Entity class representing a user in the clinic management system.
+ */
 @Entity
 @Table(name = "users")
-@Schema(description = "Details of a user")
+@Schema(description = "Details of a user in the clinic system")
 public class UserEntity {
 
+    /**
+     * Enum representing the role of a user.
+     */
     public enum Role {
         ADMIN,
         DOCTOR,
@@ -57,10 +63,20 @@ public class UserEntity {
     @Schema(description = "Appointments where the user is a doctor")
     private Set<AppointmentEntity> appointmentsAsDoctor;
 
-    // Domyślny konstruktor (wymagany przez Hibernate)
+    /**
+     * Default constructor required by Hibernate.
+     */
     public UserEntity() {}
 
-    // Konstruktor z wszystkimi polami
+    /**
+     * Constructor initializing all required fields of the user.
+     *
+     * @param username the username
+     * @param password the password
+     * @param role the role
+     * @param email the email address
+     * @param fullName the full name
+     */
     public UserEntity(String username, String password, Role role, String email, String fullName) {
         this.username = username;
         this.password = password;
@@ -69,7 +85,7 @@ public class UserEntity {
         this.fullName = fullName;
     }
 
-    // Gettery i settery
+    // Getters and setters
 
     public Long getId() {
         return id;
