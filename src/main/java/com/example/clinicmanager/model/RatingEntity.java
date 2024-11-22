@@ -1,6 +1,7 @@
 package com.example.clinicmanager.model;
 
 import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "ratings")
@@ -8,58 +9,34 @@ public class RatingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Unique identifier of the rating", example = "1")
     private Long id;
-
-    @Column(nullable = false)
-    private int score;
-
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private UserEntity doctor;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
+    @Schema(description = "Patient who gave the rating")
     private UserEntity patient;
 
-    @OneToOne
-    @JoinColumn(name = "appointment_id", nullable = false)
-    private AppointmentEntity appointment;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    @Schema(description = "Doctor who received the rating")
+    private UserEntity doctor;
 
+    @Schema(description = "Rating value", example = "5")
+    private Integer rating;
+
+    @Schema(description = "Optional comments provided by the patient", example = "Excellent service!")
+    private String comments;
     // Default constructor for JPA
     public RatingEntity() {
     }
 
-    // Constructor with fields
-    public RatingEntity(int score, UserEntity doctor, UserEntity patient, AppointmentEntity appointment) {
-        this.score = score;
-        this.doctor = doctor;
-        this.patient = patient;
-        this.appointment = appointment;
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public UserEntity getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(UserEntity doctor) {
-        this.doctor = doctor;
     }
 
     public UserEntity getPatient() {
@@ -70,11 +47,30 @@ public class RatingEntity {
         this.patient = patient;
     }
 
-    public AppointmentEntity getAppointment() {
-        return appointment;
+    public UserEntity getDoctor() {
+        return doctor;
     }
 
-    public void setAppointment(AppointmentEntity appointment) {
-        this.appointment = appointment;
+    public void setDoctor(UserEntity doctor) {
+        this.doctor = doctor;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }
+
+
+

@@ -6,8 +6,6 @@ import com.example.clinicmanager.repository.AppointmentRepository;
 import com.example.clinicmanager.repository.RatingRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class RatingService {
 
@@ -19,23 +17,19 @@ public class RatingService {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public RatingEntity rateAppointment(Long appointmentId, int score) {
-        Optional<AppointmentEntity> appointmentOpt = appointmentRepository.findById(appointmentId);
-        if (appointmentOpt.isEmpty()) {
-            throw new IllegalArgumentException("Appointment not found.");
-        }
+    public RatingEntity rateAppointment(Long appointmentId, int score, String comments) {
+        AppointmentEntity appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        AppointmentEntity appointment = appointmentOpt.get();
-
-        if (appointment.getDoctorReport() == null) {
-            throw new IllegalStateException("Cannot rate an appointment that has not been completed.");
+        if (!"COMPLETED".equals(appointment.getStatus())) {
+            throw new IllegalStateException("Cannot rate an appointment that is not completed.");
         }
 
         RatingEntity rating = new RatingEntity();
-        rating.setAppointment(appointment);
         rating.setDoctor(appointment.getDoctor());
         rating.setPatient(appointment.getPatient());
-        rating.setScore(score);
+        rating.setRating(score);
+        rating.setComments(comments);
 
         return ratingRepository.save(rating);
     }

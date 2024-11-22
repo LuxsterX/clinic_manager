@@ -15,11 +15,12 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @PostMapping("/{appointmentId}")
+    @PostMapping("/rate")
     public ResponseEntity<RatingEntity> rateAppointment(
-            @PathVariable Long appointmentId,
-            @RequestBody int score) {
-        RatingEntity rating = ratingService.rateAppointment(appointmentId, score);
+            @RequestParam Long appointmentId,
+            @RequestParam int score,
+            @RequestParam String comments) {
+        RatingEntity rating = ratingService.rateAppointment(appointmentId, score, comments);
         return ResponseEntity.ok(rating);
     }
 }

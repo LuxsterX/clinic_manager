@@ -1,39 +1,72 @@
 package com.example.clinicmanager.service;
 
+import com.example.clinicmanager.dto.AppointmentDTO;
 import com.example.clinicmanager.model.AppointmentEntity;
-import com.example.clinicmanager.model.UserEntity;
 import com.example.clinicmanager.repository.AppointmentRepository;
+import com.example.clinicmanager.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final UserRepository userRepository;
 
-    public AppointmentService(AppointmentRepository appointmentRepository) {
+    @Autowired
+    public AppointmentService(AppointmentRepository appointmentRepository, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
+        this.userRepository = userRepository;
     }
 
-    // Wizyty pacjenta według statusu
-    public List<AppointmentEntity> getAppointmentsForPatientByStatus(UserEntity patient, AppointmentEntity.Status status) {
-        return appointmentRepository.findByPatientAndStatus(patient, status);
+    public List<AppointmentDTO> getAllAppointments() {
+        return appointmentRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    // Wizyty lekarza według statusu
-    public List<AppointmentEntity> getAppointmentsForDoctorByStatus(UserEntity doctor, AppointmentEntity.Status status) {
-        return appointmentRepository.findByDoctorAndStatus(doctor, status);
+    public AppointmentDTO getAppointmentById(Long id) {
+        return appointmentRepository.findById(id)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new NoSuchElementException("Appointment not found"));
     }
 
-    // Wizyty pacjenta według daty i statusu
-    public List<AppointmentEntity> getAppointmentsForPatientByDateAndStatus(UserEntity patient, LocalDateTime start, LocalDateTime end, AppointmentEntity.Status status) {
-        return appointmentRepository.findByPatientAndDateTimeBetweenAndStatus(patient, start, end, status);
+    public AppointmentDTO createAppointment(AppointmentDTO appointmentDTO, String patientUsername) {
+        AppointmentEntity appointment = mapToEntity(appointmentDTO);
+        appointment.setPatient(userRepository.findByUsername(patientUsername)
+                .orElseThrow(() -> new NoSuchElementException("Patient not found")));
+        return mapToDTO(appointmentRepository.save(appointment));
     }
 
-    // Wizyty lekarza według daty i statusu
-    public List<AppointmentEntity> getAppointmentsForDoctorByDateAndStatus(UserEntity doctor, LocalDateTime start, LocalDateTime end, AppointmentEntity.Status status) {
-        return appointmentRepository.findByDoctorAndDateTimeBetweenAndStatus(doctor, start, end, status);
+    public void cancelAppointment(Long appointmentId, String patientUsername) {
+        AppointmentEntity appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new NoSuchElementException("Appointment not found"));
+
+        if (!appointment.getPatient().getUsername().equals(patientUsername)) {
+            throw new IllegalArgumentException("You are not authorized to cancel this appointment.");
+        }
+
+        appointmentRepository.delete(appointment);
+    }
+
+    private AppointmentDTO mapToDTO(AppointmentEntity entity) {
+        return new AppointmentDTO(
+                entity.getId(),
+                entity.getPatient().getId(),
+                entity.getDoctor().getId(),
+                entity.getDateTime(),
+                entity.getDetails()
+        );
+    }
+
+    private AppointmentEntity mapToEntity(AppointmentDTO dto) {
+        AppointmentEntity entity = new AppointmentEntity();
+        entity.setDateTime(dto.getDateTime());
+        entity.setDetails(dto.getDetails());
+        return entity;
     }
 }

@@ -1,28 +1,65 @@
 package com.example.clinicmanager.controller;
 
-import com.example.clinicmanager.service.UserService;
+import com.example.clinicmanager.model.UserEntity;
+import com.example.clinicmanager.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register")
-    public String register(@RequestParam String username, @RequestParam String password) {
-        String encodedPassword = userService.encodePassword(password);
-        // Logika rejestracji użytkownika
-        return "User registered with encoded password: " + encodedPassword;
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
-        // Logika logowania użytkownika
-        return "User logged in";
+    public Map<String, String> login(@RequestBody LoginRequest loginRequest) {
+        UserEntity user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        // Zwrot roli użytkownika
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Login successful");
+        response.put("role", user.getRole().toString());
+        return response;
+    }
+
+
+    public static class LoginRequest {
+        private String username;
+        private String password;
+
+        // Gettery i settery
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
     }
 }
