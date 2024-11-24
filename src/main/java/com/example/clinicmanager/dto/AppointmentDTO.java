@@ -22,14 +22,18 @@ public class AppointmentDTO {
     @Schema(description = "Additional details or notes about the appointment", example = "Follow-up consultation")
     private String details;
 
+    @Schema(description = "Status of the appointment", example = "Scheduled")
+    private String status;
+
     public AppointmentDTO() {}
 
-    public AppointmentDTO(Long id, Long patientId, Long doctorId, LocalDateTime dateTime, String details) {
+    public AppointmentDTO(Long id, Long patientId, Long doctorId, LocalDateTime dateTime, String details, String status) {
         this.id = id;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.dateTime = dateTime;
         this.details = details;
+        this.status = status;
     }
 
     public Long getId() {
@@ -70,5 +74,13 @@ public class AppointmentDTO {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

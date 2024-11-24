@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Entity
 @Schema(description = "Entity representing an appointment in the clinic")
+@Table(name = "appointments")
 public class AppointmentEntity {
 
     @Id
@@ -32,8 +33,16 @@ public class AppointmentEntity {
     @Schema(description = "Details or notes about the appointment", example = "Routine check-up")
     private String details;
 
+    @Enumerated(EnumType.STRING)
     @Schema(description = "Status of the appointment", example = "SCHEDULED")
-    private String status;
+    private Status status;
+
+    // Enum for appointment status
+    public enum Status {
+        SCHEDULED,
+        COMPLETED,
+        CANCELED
+    }
 
     // Getters and setters
     public Long getId() {
@@ -76,11 +85,11 @@ public class AppointmentEntity {
         this.details = details;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 }

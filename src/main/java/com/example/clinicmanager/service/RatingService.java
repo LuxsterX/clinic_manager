@@ -29,18 +29,23 @@ public class RatingService {
      * @param appointmentId the ID of the appointment to be rated
      * @param score the rating score
      * @param comments optional comments from the patient
+     * @param patientUsername the username of the patient making the rating
      * @return the created RatingEntity object
      */
     @Operation(
             summary = "Rate an appointment",
             description = "Allows a patient to rate a completed appointment. The appointment must have a 'COMPLETED' status."
     )
-    public RatingEntity rateAppointment(Long appointmentId, int score, String comments) {
+    public RatingEntity rateAppointment(Long appointmentId, int score, String comments, String patientUsername) {
         AppointmentEntity appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
         if (!"COMPLETED".equals(appointment.getStatus())) {
             throw new IllegalStateException("Cannot rate an appointment that is not completed.");
+        }
+
+        if (!appointment.getPatient().getUsername().equals(patientUsername)) {
+            throw new IllegalArgumentException("You can only rate your own appointments.");
         }
 
         RatingEntity rating = new RatingEntity();
