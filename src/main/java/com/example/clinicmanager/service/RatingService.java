@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 /**
  * Service for managing ratings for appointments.
  */
@@ -38,9 +40,9 @@ public class RatingService {
     )
     public RatingEntity rateAppointment(Long appointmentId, int score, String comments, String patientUsername) {
         AppointmentEntity appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+                .orElseThrow(() -> new NoSuchElementException("Appointment not found"));
 
-        if (!"COMPLETED".equals(appointment.getStatus())) {
+        if (!appointment.getStatus().equals(AppointmentEntity.Status.COMPLETED)) {
             throw new IllegalStateException("Cannot rate an appointment that is not completed.");
         }
 
@@ -56,4 +58,5 @@ public class RatingService {
 
         return ratingRepository.save(rating);
     }
+
 }

@@ -71,16 +71,37 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+    @Transactional
+    public void markAppointmentAsCompleted(Long appointmentId, String doctorUsername) {
+        AppointmentEntity appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new NoSuchElementException("Appointment not found"));
+
+        if (!appointment.getDoctor().getUsername().equals(doctorUsername)) {
+            throw new IllegalArgumentException("Unauthorized to complete this appointment.");
+        }
+
+        if (!appointment.getStatus().equals(AppointmentEntity.Status.SCHEDULED)) {
+            throw new IllegalStateException("Only scheduled appointments can be marked as completed.");
+        }
+
+        appointment.setStatus(AppointmentEntity.Status.COMPLETED);
+        appointmentRepository.save(appointment);
+    }
+
+
     private AppointmentDTO mapToDTO(AppointmentEntity entity) {
         return new AppointmentDTO(
                 entity.getId(),
                 entity.getPatient().getId(),
+                entity.getPatient().getFullName(), // Pobieranie pełnej nazwy pacjenta
                 entity.getDoctor().getId(),
+                entity.getDoctor().getFullName(), // Pobieranie pełnej nazwy lekarza
                 entity.getDateTime(),
                 entity.getDetails(),
                 entity.getStatus().toString()
         );
     }
+
 
     private AppointmentEntity mapToEntity(AppointmentDTO dto) {
         AppointmentEntity entity = new AppointmentEntity();

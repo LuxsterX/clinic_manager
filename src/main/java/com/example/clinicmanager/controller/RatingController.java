@@ -6,9 +6,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/ratings")
@@ -22,14 +24,25 @@ public class RatingController {
     }
 
     @PostMapping("/rate")
-    @Operation(summary = "Rate an appointment", description = "Allows a patient to rate a completed appointment with a score and comments")
-    public ResponseEntity<RatingEntity> rateAppointment(
-            @Parameter(description = "ID of the appointment to rate", required = true) @RequestParam Long appointmentId,
-            @Parameter(description = "Score for the appointment", required = true) @RequestParam int score,
-            @Parameter(description = "Additional comments about the appointment", required = false) @RequestParam(required = false) String comments,
+    @PreAuthorize("hasRole('PATIENT')")
+    @Operation(summary = "Rate an appointment", description = "Allows a patient to rate a completed appointment")
+    public ResponseEntity<?> rateAppointment(
+            @RequestParam Long appointmentId,
+            @RequestParam int score,
+            @RequestParam(required = false) String comments,
             Principal principal) {
-        String patientUsername = principal.getName();
-        RatingEntity rating = ratingService.rateAppointment(appointmentId, score, comments, patientUsername);
-        return ResponseEntity.ok(rating);
+        try {
+            RatingEntity rating = ratingService.rateAppointment(appointmentId, score, comments, principal.getName());
+            return ResponseEntity.ok(rating);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("Appointment not found.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An unexpected error occurred.");
+        }
     }
+
 }

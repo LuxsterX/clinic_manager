@@ -34,8 +34,8 @@ public class AppointmentController {
     }
 
     @Operation(summary = "Get appointments for the logged-in user", description = "Retrieve a list of appointments specific to the logged-in user")
-    @GetMapping("/patient/appointments")
-    @PreAuthorize("hasRole('PATIENT')")
+    @GetMapping("/appointments")
+    @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR')")
     public ResponseEntity<List<AppointmentDTO>> getPatientAppointments(Principal principal) {
         return ResponseEntity.ok(appointmentService.getAppointmentsForUser(principal.getName()));
     }
@@ -66,4 +66,22 @@ public class AppointmentController {
             return ResponseEntity.status(500).body("An unexpected error occurred.");
         }
     }
+
+    @Operation(summary = "Complete an appointment", description = "Allows a doctor to mark completion of a appointment by updating the status to COMPLETED")
+    @PutMapping("/{appointmentId}/complete")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<String> completeAppointment(@PathVariable Long appointmentId, Principal principal) {
+        try {
+            appointmentService.markAppointmentAsCompleted(appointmentId, principal.getName());
+            return ResponseEntity.ok("Appointment marked as completed.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body("Appointment not found.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An unexpected error occurred.");
+        }
+    }
+
+
 }

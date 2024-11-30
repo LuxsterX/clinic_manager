@@ -13,8 +13,14 @@ public class AppointmentDTO {
     @Schema(description = "Unique identifier of the patient", example = "10")
     private Long patientId;
 
+    @Schema(description = "Full name of the patient", example = "John Doe")
+    private String patientName;
+
     @Schema(description = "Unique identifier of the doctor", example = "5")
     private Long doctorId;
+
+    @Schema(description = "Full name of the doctor", example = "Dr. Jane Smith")
+    private String doctorName;
 
     @Schema(description = "Date and time of the appointment", example = "2024-12-01T10:30:00")
     private LocalDateTime dateTime;
@@ -25,12 +31,13 @@ public class AppointmentDTO {
     @Schema(description = "Status of the appointment", example = "Scheduled")
     private String status;
 
-    public AppointmentDTO() {}
-
-    public AppointmentDTO(Long id, Long patientId, Long doctorId, LocalDateTime dateTime, String details, String status) {
+    // Konstruktor z dodatkowymi polami
+    public AppointmentDTO(Long id, Long patientId, String patientName, Long doctorId, String doctorName, LocalDateTime dateTime, String details, String status) {
         this.id = id;
         this.patientId = patientId;
+        this.patientName = patientName;
         this.doctorId = doctorId;
+        this.doctorName = doctorName;
         this.dateTime = dateTime;
         this.details = details;
         this.status = status;
@@ -52,12 +59,28 @@ public class AppointmentDTO {
         this.patientId = patientId;
     }
 
+    public String getPatientName() {
+        return patientName;
+    }
+
+    public void setPatientName(String patientName) {
+        this.patientName = patientName;
+    }
+
     public Long getDoctorId() {
         return doctorId;
     }
 
     public void setDoctorId(Long doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
     }
 
     public LocalDateTime getDateTime() {
