@@ -1,5 +1,6 @@
 package com.example.clinicmanager.service;
 
+import com.example.clinicmanager.dto.UserDTO;
 import com.example.clinicmanager.model.UserEntity;
 import com.example.clinicmanager.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service class for managing users.
@@ -115,4 +117,11 @@ public class UserService {
     public String encodePassword(String rawPassword) {
         return passwordEncoder.encode(rawPassword);
     }
+
+    public List<UserDTO> getUsersByRole(UserEntity.Role role) {
+        return userRepository.findByRole(role).stream()
+                .map(user -> new UserDTO(user.getUsername(), user.getEmail(), user.getFullName(), user.getRole().toString()))
+                .collect(Collectors.toList());
+    }
+
 }

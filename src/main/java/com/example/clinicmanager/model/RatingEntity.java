@@ -16,19 +16,21 @@ public class RatingEntity {
     @Schema(description = "Unique identifier of the rating", example = "1")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     @Schema(description = "Patient who gave the rating")
     private UserEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
     @Schema(description = "Doctor who received the rating")
     private UserEntity doctor;
 
-    @Schema(description = "Rating value", example = "5")
+    @Column(nullable = false)
+    @Schema(description = "Rating value between 1 and 5", example = "5", allowableValues = {"1", "2", "3", "4", "5"})
     private Integer rating;
 
+    @Column(length = 255)
     @Schema(description = "Optional comments provided by the patient", example = "Excellent service!")
     private String comments;
 

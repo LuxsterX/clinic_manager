@@ -1,5 +1,6 @@
 package com.example.clinicmanager.controller;
 
+import com.example.clinicmanager.dto.UserDTO;
 import com.example.clinicmanager.model.UserEntity;
 import com.example.clinicmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,4 +34,12 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Get all patients", description = "Retrieve a list of all registered patients with their ID and full name")
+    @GetMapping("/patients")
+    public ResponseEntity<List<UserDTO>> getAllPatients() {
+        List<UserDTO> patients = userService.getUsersByRole(UserEntity.Role.PATIENT);
+        return ResponseEntity.ok(patients);
+    }
+
 }

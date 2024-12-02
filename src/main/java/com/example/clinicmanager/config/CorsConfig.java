@@ -14,10 +14,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3010") // Frontend URL
+                        .allowedOrigins("http://localhost:3010", "http://your-production-url.com") // Frontend URLs
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true); // Allow credentials such as cookies or Authorization headers
+                        .allowCredentials(true) // Allow credentials such as cookies or Authorization headers
+                        .maxAge(3600); // Cache preflight requests for 1 hour
             }
         };
     }

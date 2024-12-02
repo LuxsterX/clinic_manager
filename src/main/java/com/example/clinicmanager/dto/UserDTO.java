@@ -17,6 +17,9 @@ public class UserDTO {
     @Schema(description = "Role of the user", example = "PATIENT")
     private String role;
 
+    public UserDTO(String username, String email, String fullName, String string) {
+    }
+
     // Getters and Setters
     public String getUsername() {
         return username;

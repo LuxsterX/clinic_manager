@@ -17,31 +17,43 @@ public class AppointmentEntity {
     @Schema(description = "Unique identifier of the appointment", example = "1")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
-    @Schema(description = "Patient linked to the appointment")
+    @Schema(description = "Patient linked to the appointment", example = "UserEntity object representing the patient")
     private UserEntity patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
-    @Schema(description = "Doctor linked to the appointment")
+    @Schema(description = "Doctor linked to the appointment", example = "UserEntity object representing the doctor")
     private UserEntity doctor;
 
+    @Column(nullable = false)
     @Schema(description = "Date and time of the appointment", example = "2023-12-01T15:30:00")
     private LocalDateTime dateTime;
 
+    @Column(length = 255)
     @Schema(description = "Details or notes about the appointment", example = "Routine check-up")
     private String details;
 
     @Enumerated(EnumType.STRING)
-    @Schema(description = "Status of the appointment", example = "SCHEDULED")
+    @Column(nullable = false)
+    @Schema(
+            description = "Status of the appointment",
+            example = "SCHEDULED",
+            allowableValues = {"SCHEDULED", "COMPLETED", "CANCELED", "RATED"}
+    )
     private Status status;
 
     // Enum for appointment status
     public enum Status {
         SCHEDULED,
         COMPLETED,
-        CANCELED
+        CANCELED,
+        RATED
+    }
+
+    // No-argument constructor (required by JPA)
+    public AppointmentEntity() {
     }
 
     // Getters and setters

@@ -3,6 +3,7 @@ package com.example.clinicmanager.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
@@ -30,11 +31,13 @@ public class UserEntity {
     private Long id;
 
     @NotBlank
+    @Size(min = 3, max = 50)
     @Column(nullable = false, unique = true)
     @Schema(description = "Username of the user", example = "john_doe")
     private String username;
 
     @NotBlank
+    @Size(min = 8)
     @Column(nullable = false)
     @Schema(description = "Password of the user")
     private String password;
@@ -46,20 +49,21 @@ public class UserEntity {
     private String email;
 
     @NotBlank
+    @Size(min = 3, max = 100)
     @Column(nullable = false, name = "full_name")
     @Schema(description = "Full name of the user", example = "John Doe")
     private String fullName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Schema(description = "Role of the user", example = "PATIENT")
+    @Schema(description = "Role of the user", example = "PATIENT", allowableValues = {"ADMIN", "DOCTOR", "PATIENT"})
     private Role role;
 
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
     @Schema(description = "Appointments where the user is a patient")
     private Set<AppointmentEntity> appointmentsAsPatient;
 
-    @OneToMany(mappedBy = "doctor")
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
     @Schema(description = "Appointments where the user is a doctor")
     private Set<AppointmentEntity> appointmentsAsDoctor;
 

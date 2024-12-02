@@ -1,6 +1,7 @@
 package com.example.clinicmanager.controller;
 
 import com.example.clinicmanager.dto.AppointmentDTO;
+import com.example.clinicmanager.model.AppointmentEntity;
 import com.example.clinicmanager.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -83,5 +84,30 @@ public class AppointmentController {
         }
     }
 
+    @Operation(summary = "Get patient appointments by status", description = "Retrieve patient-specific appointments filtered by status")
+    @GetMapping("/patient/appointments/status/{status}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<List<AppointmentDTO>> getPatientAppointmentsByStatus(@PathVariable String status, Principal principal) {
+        try {
+            AppointmentEntity.Status appointmentStatus = AppointmentEntity.Status.valueOf(status.toUpperCase());
+            List<AppointmentDTO> appointments = appointmentService.getAppointmentsForUserByStatus(principal.getName(), appointmentStatus);
+            return ResponseEntity.ok(appointments);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @Operation(summary = "Get doctor appointments by status", description = "Retrieve doctor-specific appointments filtered by status")
+    @GetMapping("/doctor/appointments/status/{status}")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<List<AppointmentDTO>> getDoctorAppointmentsByStatus(@PathVariable String status, Principal principal) {
+        try {
+            AppointmentEntity.Status appointmentStatus = AppointmentEntity.Status.valueOf(status.toUpperCase());
+            List<AppointmentDTO> appointments = appointmentService.getAppointmentsForUserByStatus(principal.getName(), appointmentStatus);
+            return ResponseEntity.ok(appointments);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
 }

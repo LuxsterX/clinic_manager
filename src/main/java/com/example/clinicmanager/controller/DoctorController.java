@@ -24,10 +24,11 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
-    @GetMapping
     @Operation(summary = "Get all doctors", description = "Retrieve a list of all registered doctors with their ID and full name")
-    public ResponseEntity<List<DoctorDTO>> getAllDoctors() {
+    @GetMapping("/list")
+    public ResponseEntity<List<DoctorDTO>> getAllDoctorsForDropdown() {
         List<DoctorDTO> doctors = doctorService.getAllDoctors();
         return ResponseEntity.ok(doctors);
     }
+
 }

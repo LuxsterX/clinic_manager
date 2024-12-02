@@ -28,10 +28,18 @@ public class AppointmentDTO {
     @Schema(description = "Additional details or notes about the appointment", example = "Follow-up consultation")
     private String details;
 
-    @Schema(description = "Status of the appointment", example = "Scheduled")
+    @Schema(
+            description = "Status of the appointment",
+            example = "Scheduled",
+            allowableValues = {"Scheduled", "Completed", "Canceled"}
+    )
     private String status;
 
-    // Konstruktor z dodatkowymi polami
+    // Bezargumentowy konstruktor
+    public AppointmentDTO() {
+    }
+
+    // Konstruktor z polami
     public AppointmentDTO(Long id, Long patientId, String patientName, Long doctorId, String doctorName, LocalDateTime dateTime, String details, String status) {
         this.id = id;
         this.patientId = patientId;
@@ -43,6 +51,7 @@ public class AppointmentDTO {
         this.status = status;
     }
 
+    // Gettery i Settery
     public Long getId() {
         return id;
     }

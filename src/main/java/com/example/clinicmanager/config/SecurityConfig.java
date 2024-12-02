@@ -28,8 +28,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/appointments/patient/**").hasAuthority("PATIENT")
-                        .requestMatchers("/api/appointments/doctor/**").hasAuthority("DOCTOR")
+                        .requestMatchers("/api/appointments/patient/**").hasAuthority("ROLE_PATIENT")
+                        .requestMatchers("/api/appointments/doctor/**").hasAuthority("ROLE_DOCTOR")
                         .requestMatchers("/auth/login/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -37,7 +37,11 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers
                         .xssProtection(xss -> xss.disable())
-                        .addHeaderWriter((request, response) -> response.addHeader("X-XSS-Protection", "1; mode=block"))
+                        .addHeaderWriter((request, response) -> {
+                            response.addHeader("X-XSS-Protection", "1; mode=block");
+                            response.addHeader("Content-Security-Policy", "default-src 'self'");
+                            response.addHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+                        })
                         .frameOptions(frame -> frame.deny()));
 
         return http.build();

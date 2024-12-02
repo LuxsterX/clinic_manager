@@ -4,8 +4,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Global exception handler to manage and handle exceptions across the application.
@@ -21,10 +27,32 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ApiResponses({
-            @ApiResponse(responseCode = "400", description = "Bad Request - Illegal Argument Exception"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Illegal Argument Exception")
     })
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        ));
+    }
+
+    /**
+     * Handles MethodArgumentNotValidException and returns a 400 Bad Request response with validation errors.
+     *
+     * @param ex the MethodArgumentNotValidException thrown by the application
+     * @return ResponseEntity containing the validation error messages
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ApiResponses({
+            @ApiResponse(responseCode = "400", description = "Bad Request - Validation Error")
+    })
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return ResponseEntity.badRequest().body(errors);
     }
 
     /**
@@ -35,9 +63,52 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     @ApiResponses({
-            @ApiResponse(responseCode = "500", description = "Internal Server Error - Unexpected Error"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error - Unexpected Error")
     })
-    public ResponseEntity<String> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred.",
+                LocalDateTime.now()
+        ));
+    }
+
+    /**
+     * Custom error response class to provide a standardized structure for error messages.
+     */
+    static class ErrorResponse {
+        private int statusCode;
+        private String message;
+        private LocalDateTime timestamp;
+
+        public ErrorResponse(int statusCode, String message, LocalDateTime timestamp) {
+            this.statusCode = statusCode;
+            this.message = message;
+            this.timestamp = timestamp;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
+        }
     }
 }
