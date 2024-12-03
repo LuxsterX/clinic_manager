@@ -120,8 +120,9 @@ public class UserService {
 
     public List<UserDTO> getUsersByRole(UserEntity.Role role) {
         return userRepository.findByRole(role).stream()
-                .map(user -> new UserDTO(user.getUsername(), user.getEmail(), user.getFullName(), user.getRole().toString()))
+                .map(user -> new UserDTO(user.getId(), user.getFullName())) // Zwracamy tylko wymagane pola
                 .collect(Collectors.toList());
     }
+
 
 }

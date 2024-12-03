@@ -39,7 +39,12 @@ public class UserController {
     @GetMapping("/patients")
     public ResponseEntity<List<UserDTO>> getAllPatients() {
         List<UserDTO> patients = userService.getUsersByRole(UserEntity.Role.PATIENT);
+        if (patients.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content if no patients found
+        }
         return ResponseEntity.ok(patients);
     }
+
+
 
 }

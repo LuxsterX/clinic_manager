@@ -5,6 +5,7 @@ import com.example.clinicmanager.model.AppointmentEntity;
 import com.example.clinicmanager.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -107,6 +108,16 @@ public class AppointmentController {
             return ResponseEntity.ok(appointments);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/doctor/schedule")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<?> createAppointmentAsDoctor(@RequestBody AppointmentDTO appointmentDTO, Principal principal) {
+        try {
+            return ResponseEntity.ok(appointmentService.createAppointmentAsDoctor(appointmentDTO, principal.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to create appointment: " + e.getMessage());
         }
     }
 

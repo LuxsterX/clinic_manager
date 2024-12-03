@@ -1,6 +1,7 @@
 package com.example.clinicmanager.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -11,18 +12,21 @@ public class AppointmentDTO {
     private Long id;
 
     @Schema(description = "Unique identifier of the patient", example = "10")
+    @NotNull(message = "Patient ID is required")
     private Long patientId;
 
     @Schema(description = "Full name of the patient", example = "John Doe")
     private String patientName;
 
     @Schema(description = "Unique identifier of the doctor", example = "5")
+    @NotNull(message = "Doctor ID is required")
     private Long doctorId;
 
     @Schema(description = "Full name of the doctor", example = "Dr. Jane Smith")
     private String doctorName;
 
     @Schema(description = "Date and time of the appointment", example = "2024-12-01T10:30:00")
+    @NotNull(message = "Date and time are required")
     private LocalDateTime dateTime;
 
     @Schema(description = "Additional details or notes about the appointment", example = "Follow-up consultation")

@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Data Transfer Object for user details")
 public class UserDTO {
 
+    @Schema(description = "Id of the user", example = "1")
+    private Long id;
+
     @Schema(description = "Username of the user", example = "john_doe")
     private String username;
 
@@ -20,7 +23,21 @@ public class UserDTO {
     public UserDTO(String username, String email, String fullName, String string) {
     }
 
+    public UserDTO(Long id, String fullName) {
+        this.id = id;
+        this.fullName = fullName;
+    }
+
     // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
     }

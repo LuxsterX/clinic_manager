@@ -28,8 +28,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/appointments/patient/**").hasAuthority("ROLE_PATIENT")
-                        .requestMatchers("/api/appointments/doctor/**").hasAuthority("ROLE_DOCTOR")
+                        .requestMatchers("/api/appointments/patient/**").hasAuthority("PATIENT")
+                        .requestMatchers("/api/appointments/doctor/**").hasAuthority("DOCTOR")
                         .requestMatchers("/auth/login/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -56,6 +56,21 @@ public class AppointmentService {
     }
 
     @Transactional
+    public AppointmentDTO createAppointmentAsDoctor(AppointmentDTO appointmentDTO, String doctorUsername) {
+        AppointmentEntity appointment = mapToEntity(appointmentDTO);
+
+        appointment.setDoctor(findUserByUsername(doctorUsername));
+        appointment.setPatient(findUserById(appointmentDTO.getPatientId()));
+
+        // Set default status if not provided
+        if (appointment.getStatus() == null) {
+            appointment.setStatus(AppointmentEntity.Status.SCHEDULED);
+        }
+
+        return mapToDTO(appointmentRepository.save(appointment));
+    }
+
+    @Transactional
     public void markAppointmentAsCanceled(Long appointmentId, String patientUsername) {
         AppointmentEntity appointment = findAppointmentById(appointmentId);
 

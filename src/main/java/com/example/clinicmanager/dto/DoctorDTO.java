@@ -12,6 +12,8 @@ public class DoctorDTO {
     private String fullName;
 
     public DoctorDTO(Long id, String fullName) {
+        this.id = id;
+        this.fullName = fullName;
     }
 
     public Long getId() {
